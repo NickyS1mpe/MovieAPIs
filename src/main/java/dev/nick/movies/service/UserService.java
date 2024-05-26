@@ -28,25 +28,36 @@ public class UserService {
         return Optional.ofNullable(mongoTemplate.findOne(query, User.class));
     }
 
-    public User createUser(String username, String password, String nickname, String emailAddress) throws Exception {
+    public User createUser(String username, String password, String emailAddress, String nickname) throws Exception {
         if (userRepository.existsUserByUsername(username)) {
             throw new Exception("Username already exists.");
         }
         String pw = SHA256(password), date = getDate();
-        return userRepository.save(new User(username, pw, emailAddress, nickname, date, date));
+        return userRepository.save(new User(username, pw, emailAddress, nickname, date, date, "", "", ""));
     }
 
     public Optional<User> userLogin(String username, String password) {
         String pw = SHA256(password);
         Query query = new Query(Criteria.where("username").is(username).and("password").is(pw));
-        query.fields().exclude("_id").exclude("password");
         User user = mongoTemplate.findOne(query, User.class);
         if (user != null) {
             String date = getDate();
             user.setLastLogin(date);
             mongoTemplate.save(user);
+            user.removeInfo();
         }
-        return Optional.ofNullable(mongoTemplate.findOne(query, User.class));
+        return Optional.ofNullable(user);
+    }
+
+    public Optional<User> updateUser(String username, String nickname, String twitter, String avatar, String notes) {
+        Query query = new Query(Criteria.where("username").is(username));
+        User user = mongoTemplate.findOne(query, User.class);
+        if (user != null) {
+            user.update(nickname, avatar, notes, twitter);
+            mongoTemplate.save(user);
+            user.removeInfo();
+        }
+        return Optional.ofNullable(user);
     }
 
     public String SHA256(String s) {

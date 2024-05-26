@@ -37,4 +37,10 @@ public class UserController {
     public ResponseEntity<Optional<User>> userLogin(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<>(userService.userLogin(payload.get("username"), payload.get("password")), HttpStatus.OK);
     }
+
+    @PostMapping("/update")
+    public ResponseEntity<Optional<User>> updateUser(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<>(userService.updateUser(payload.get("username"), payload.get("nickname"),
+                payload.get("twitter"), payload.get("avatar"), payload.get("notes")), HttpStatus.OK);
+    }
 }
