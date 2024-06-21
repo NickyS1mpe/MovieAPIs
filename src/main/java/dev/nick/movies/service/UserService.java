@@ -1,16 +1,19 @@
 package dev.nick.movies.service;
 
+import dev.nick.movies.model.Movie;
 import dev.nick.movies.model.User;
 import dev.nick.movies.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,6 +60,36 @@ public class UserService {
             mongoTemplate.save(user);
             user.removeInfo();
         }
+        return Optional.ofNullable(user);
+    }
+
+    public Optional<User> addWatchList(String username, String imdbId) {
+        Query query = new Query(Criteria.where("username").is(username));
+        User user = mongoTemplate.findOne(query, User.class);
+        if (user != null) {
+            List<String> list = user.getWatchList();
+            if (!list.contains(imdbId)) {
+                list.add(imdbId);
+                mongoTemplate.save(user);
+                user.removeInfo();
+            }
+        }
+
+        return Optional.ofNullable(user);
+    }
+
+    public Optional<User> removeWatchList(String username, String imdbId) {
+        Query query = new Query(Criteria.where("username").is(username));
+        User user = mongoTemplate.findOne(query, User.class);
+        if (user != null) {
+            List<String> list = user.getWatchList();
+            if (list.contains(imdbId)) {
+                list.remove(imdbId);
+                mongoTemplate.save(user);
+                user.removeInfo();
+            }
+        }
+
         return Optional.ofNullable(user);
     }
 

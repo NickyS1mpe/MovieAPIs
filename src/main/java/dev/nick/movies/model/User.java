@@ -30,6 +30,8 @@ public class User {
     @DocumentReference
     private List<Review> reviewIds;
 
+    private List<String> watchList;
+
     public User(String username, String password, String emailAddress, String nickname, String joinDate, String lastLogin, String avatar, String twitter, String notes) {
         this.username = username;
         this.password = password;

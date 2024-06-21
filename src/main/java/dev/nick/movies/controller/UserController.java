@@ -43,4 +43,14 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUser(payload.get("username"), payload.get("nickname"),
                 payload.get("twitter"), payload.get("avatar"), payload.get("notes")), HttpStatus.OK);
     }
+
+    @PostMapping("/addWatchList")
+    public ResponseEntity<Optional<User>> addWatchList(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<>(userService.addWatchList(payload.get("username"), payload.get("imdbId")), HttpStatus.OK);
+    }
+
+    @PostMapping("/removeWatchList")
+    public ResponseEntity<Optional<User>> removeWatchList(@RequestBody Map<String, String> payload) {
+        return new ResponseEntity<>(userService.removeWatchList(payload.get("username"), payload.get("imdbId")), HttpStatus.OK);
+    }
 }
